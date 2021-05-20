@@ -154,9 +154,13 @@ public class SettingsGui {
                             }
                             if(setting instanceof FloatSetting) {
                                 if(onPress.getBukkitEvent().isRightClick()) {
-                                    SettingTask.getInstance().setSetting(setting, (float)SettingTask.getInstance().getSetting(setting)-0.5f);
+                                    if((float)SettingTask.getInstance().getSetting(setting)-0.5f >= ((FloatSetting) setting).getMinValue()) {
+                                        SettingTask.getInstance().setSetting(setting, (float)SettingTask.getInstance().getSetting(setting)-0.5f);
+                                    }
                                 } else if(onPress.getBukkitEvent().isLeftClick()) {
-                                    SettingTask.getInstance().setSetting(setting, (float)SettingTask.getInstance().getSetting(setting)+0.5f);
+                                    if((float)SettingTask.getInstance().getSetting(setting)+0.5f <= ((FloatSetting) setting).getMaxValue()) {
+                                        SettingTask.getInstance().setSetting(setting, (float)SettingTask.getInstance().getSetting(setting)+0.5f);
+                                    }
                                 }
                                 ItemStack itemStack = onPress.getBukkitEvent().getCurrentItem();
                                 ItemMeta meta = itemStack.getItemMeta();
