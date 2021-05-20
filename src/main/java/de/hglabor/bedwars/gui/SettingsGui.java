@@ -12,9 +12,9 @@ import de.hglabor.bedwars.config.settings.types.BooleanSetting;
 import de.hglabor.bedwars.config.settings.types.FloatSetting;
 import de.hglabor.bedwars.gui.button.GuiButton;
 import de.hglabor.utils.noriskutils.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -35,6 +35,7 @@ public class SettingsGui {
             guiBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
         }
         drawCriteriaBar(guiBuilder, player);
+        drawButtons(guiBuilder, player);
         return guiBuilder.build();
     }
 
@@ -60,6 +61,7 @@ public class SettingsGui {
                             criteriaSettingsBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
                         }
                         drawCriteriaBar(criteriaSettingsBuilder, player);
+                        drawButtons(criteriaSettingsBuilder, player);
                         drawSettings(criteriaSettingsBuilder, player, criteria);
                         onPress.getPlayer().closeInventory();
                         onPress.getPlayer().openInventory(criteriaSettingsBuilder.build());
@@ -68,6 +70,46 @@ public class SettingsGui {
                 guiBuilder.withItem(new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setName(" ").build(), i);
             }
         }
+    }
+
+    private static void drawButtons(GuiBuilder guiBuilder, Player player) {
+        guiBuilder.withButton(53, new GuiButton(
+                Localization.getMessage("settings.button.applyAndExit.title", Locale.getByPlayer(player)),
+                Localization.getMessage("settings.button.applyAndExit.description", Locale.getByPlayer(player)),
+                Material.LIME_STAINED_GLASS_PANE,
+                onPress -> {
+                    GuiBuilder selectionBuilder = new GuiBuilder(Bedwars.getPlugin());
+                    selectionBuilder.withSlots(27);
+                    for (int i = 0; i < 27; i++) {
+                        selectionBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
+                    }
+                    selectionBuilder.withButton(10, new GuiButton(
+                            Localization.getMessage("settings.button.applyToEveryRound.title", Locale.getByPlayer(player)),
+                            Localization.getMessage("settings.button.applyToEveryRound.description", Locale.getByPlayer(player)),
+                            Material.LIME_DYE,
+                            clickAction -> {
+                                //write settings to config in template
+                                player.closeInventory();
+                                player.playSound(player.getLocation(), Sound.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1, 1);
+                                player.sendMessage(Localization.getMessage("settings.saved", Locale.getByPlayer(player)));
+                            }
+                    ));
+                    selectionBuilder.withButton(16, new GuiButton(
+                            Localization.getMessage("settings.button.applyToOnlyThisRound.title", Locale.getByPlayer(player)),
+                            Localization.getMessage("settings.button.applyToOnlyThisRound.description", Locale.getByPlayer(player)),
+                            Material.ORANGE_DYE,
+                            clickAction -> {
+                                player.closeInventory();
+                                player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
+                                player.sendMessage(Localization.getMessage("settings.saved", Locale.getByPlayer(player)));
+                            }
+                    ));
+                    selectionBuilder.withName("APPLY CONFIRMATION");
+                    player.closeInventory();
+                    player.openInventory(selectionBuilder.build());
+                    player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1);
+                }
+        ));
     }
 
     private static void drawSettings(GuiBuilder guiBuilder, Player player, Criteria criteria) {
@@ -97,10 +139,18 @@ public class SettingsGui {
                             if(onPress.getBukkitEvent().getClick() == ClickType.MIDDLE) {
                                 SettingTask.getInstance().setSetting(setting, setting.getDefaultValue());
                                 player.sendMessage(Localization.getMessage("settings.settingWasChanged", ImmutableMap.of("setting", setting.getName(), "newValue", setting.getDefaultValue().toString()), Locale.getByPlayer(player)));
+                                ItemStack itemStack = onPress.getBukkitEvent().getCurrentItem();
+                                ItemMeta meta = itemStack.getItemMeta();
+                                meta.setLore(List.copyOf(createLore(setting, player)));
+                                itemStack.setItemMeta(meta);
                                 return;
                             }
                             if(setting instanceof BooleanSetting) {
                                 SettingTask.getInstance().setSetting(setting, !(boolean) SettingTask.getInstance().getSetting(setting));
+                                ItemStack itemStack = onPress.getBukkitEvent().getCurrentItem();
+                                ItemMeta meta = itemStack.getItemMeta();
+                                meta.setLore(List.copyOf(createLore(setting, player)));
+                                itemStack.setItemMeta(meta);
                             }
                             if(setting instanceof FloatSetting) {
                                 if(onPress.getBukkitEvent().isRightClick()) {
@@ -108,6 +158,10 @@ public class SettingsGui {
                                 } else if(onPress.getBukkitEvent().isLeftClick()) {
                                     SettingTask.getInstance().setSetting(setting, (float)SettingTask.getInstance().getSetting(setting)+0.5f);
                                 }
+                                ItemStack itemStack = onPress.getBukkitEvent().getCurrentItem();
+                                ItemMeta meta = itemStack.getItemMeta();
+                                meta.setLore(List.copyOf(createLore(setting, player)));
+                                itemStack.setItemMeta(meta);
                             }
                             player.sendMessage(Localization.getMessage("settings.settingWasChanged", ImmutableMap.of("setting", setting.getName(), "newValue", SettingTask.getInstance().getSetting(setting)), Locale.getByPlayer(player)));
                         }

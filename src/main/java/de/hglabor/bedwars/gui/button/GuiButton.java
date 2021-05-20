@@ -2,6 +2,7 @@ package de.hglabor.bedwars.gui.button;
 
 import de.hglabor.utils.noriskutils.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +13,9 @@ public  class GuiButton {
     private Consumer<GuiButtonClickAction> onPress;
     private ItemStack itemStackResult;
     public void press(InventoryClickEvent event) {
-        onPress.accept(new GuiButtonClickAction((Player) event.getWhoClicked(), this, event));
+        Player player = (Player) event.getWhoClicked();
+        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1,1);
+        onPress.accept(new GuiButtonClickAction(player, this, event));
     }
 
     public GuiButton(String name, String description, Material icon, Consumer<GuiButtonClickAction> onPress) {

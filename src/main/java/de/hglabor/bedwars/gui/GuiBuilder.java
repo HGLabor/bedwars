@@ -63,13 +63,13 @@ public final class GuiBuilder {
                         if(event.getView().getTitle().equalsIgnoreCase(name)) {
                             event.setCancelled(true);
                             if(event.getCurrentItem() != null) {
-                                if(event.getCurrentItem().isSimilar(items.get(i))) {
+                                if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(items.get(i).getItemMeta().getDisplayName())) {
                                     if(guiButtons.containsKey(i)) {
                                         GuiButton guiButton = guiButtons.get(i);
                                         guiButton.press(event);
                                     }
-                                    waitingForUnRegister.remove(this);
-                                    HandlerList.unregisterAll(this);
+                                    //waitingForUnRegister.remove(this);
+                                    //HandlerList.unregisterAll(this);
                                 }
                             }
                         }
