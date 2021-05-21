@@ -11,13 +11,16 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven("https://repo.codemc.io/repository/maven-snapshots/")
+    maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    compileOnly("org.spigotmc", "spigot", "1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol", "ProtocolLib", "4.6.0")
     implementation("de.hglabor:hglabor-utils:0.0.10")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
+    compileOnly("org.bukkit","craftbukkit","1.16.5-R0.1-SNAPSHOT")
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11

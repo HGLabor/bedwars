@@ -1,6 +1,7 @@
 package de.hglabor.bedwars.commands;
 
 import de.hglabor.bedwars.gui.SettingsGui;
+import de.hglabor.bedwars.utils.PacketUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,8 @@ public class SettingsCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(sender.hasPermission("hglabor.bedwars.settings")) {
             if(sender instanceof Player) {
-                ((Player) sender).openInventory(SettingsGui.createGui((Player) sender));
+                PacketUtils.sendNotification((Player) sender, "hglabor", "test");
+                //((Player) sender).openInventory(SettingsGui.createGui((Player) sender));
             }
         }
         return false;

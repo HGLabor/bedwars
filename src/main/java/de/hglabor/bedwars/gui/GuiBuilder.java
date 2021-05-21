@@ -11,8 +11,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public final class GuiBuilder {
 
@@ -83,9 +85,9 @@ public final class GuiBuilder {
                 @EventHandler
                 public void onCloseInventory(InventoryCloseEvent event) {
                     if(event.getView().getTitle().equalsIgnoreCase(name)) {
-                        for (Listener listeners : waitingForUnRegister) {
-                            waitingForUnRegister.remove(listeners);
+                        for (Listener listeners : List.copyOf(waitingForUnRegister)) {
                             HandlerList.unregisterAll(listeners);
+                            waitingForUnRegister.remove(listeners);
                         }
                     }
                 }
