@@ -10,7 +10,7 @@ public class SettingTask {
         return instance;
     }
 
-    private static HashMap<Setting<?>, Object> settingsMap = new HashMap<>();
+    private static final HashMap<Setting<?>, Object> settingsMap = new HashMap<>();
 
     public void addSetting(Setting<?> setting) {
         settingsMap.put(setting, setting.getDefaultValue());
@@ -24,6 +24,5 @@ public class SettingTask {
     public <V> void setSetting(Setting<?> setting, V value) {
         settingsMap.put(setting, value);
     }
-
 
 }

@@ -12,8 +12,8 @@ public enum Criteria {
     MAP("settings.criteria.map", Material.MAP),
     MECHANICS("settings.criteria.mechanics", Material.ELYTRA);
 
-    private String translationKey;
-    private Material criteriaIcon;
+    private final String translationKey;
+    private final Material criteriaIcon;
 
     Criteria(String translationKey, Material criteriaIcon) {
         this.criteriaIcon = criteriaIcon;

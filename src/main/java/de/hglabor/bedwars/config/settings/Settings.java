@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Settings {
 
-    private static HashMap<String, Setting<?>> settings = new HashMap<>();
+    private static final HashMap<String, Setting<?>> settings = new HashMap<>();
 
     public static void addSetting(String key, Setting<?> setting) {
         SettingTask.getInstance().addSetting(setting);
@@ -20,11 +20,11 @@ public class Settings {
         return SettingTask.getInstance().getSetting(settings.get(key));
     }
 
-    public static <T> T getSetting(Setting<?> setting) {
+    public static <T> T getSetting(Setting<? extends T> setting) {
         return SettingTask.getInstance().getSetting(setting);
     }
 
-    public static <V> void setSetting(Setting<?> setting, V value) {
+    public static <V> void setSetting(Setting<? super V> setting, V value) {
         SettingTask.getInstance().setSetting(setting, value);
     }
 

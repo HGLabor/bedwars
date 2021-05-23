@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public class LocalizationFile {
 
-    private YamlConfiguration configuration;
-    private File file;
+    private final YamlConfiguration configuration;
+    private final File file;
 
     public LocalizationFile(File file) {
         if(!file.exists()) {

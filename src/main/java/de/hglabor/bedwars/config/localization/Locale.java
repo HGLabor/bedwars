@@ -13,7 +13,7 @@ public enum Locale {
         this.alias = alias;
     }
 
-    private String alias;
+    private final String alias;
 
     public String getAlias() {
         return alias;
@@ -21,7 +21,7 @@ public enum Locale {
 
     public static Locale getByAlias(String alias) {
         for (Locale locale : Locale.values()) {
-            if(locale.getAlias().equalsIgnoreCase(alias)) {
+            if (locale.getAlias().equalsIgnoreCase(alias)) {
                 return locale;
             }
         }
@@ -31,7 +31,7 @@ public enum Locale {
     public static Locale getByFile(File file) {
         String alias = file.getName().replace(".locale.yml", "");
         for (Locale locale : Locale.values()) {
-            if(locale.getAlias().equalsIgnoreCase(alias)) {
+            if (locale.getAlias().equalsIgnoreCase(alias)) {
                 return locale;
             }
         }
@@ -41,7 +41,7 @@ public enum Locale {
     public static Locale getByPlayer(Player player) {
         String alias = player.getLocale().split("_")[0];
         for (Locale locale : Locale.values()) {
-            if(locale.getAlias().equalsIgnoreCase(alias)) {
+            if (locale.getAlias().equalsIgnoreCase(alias)) {
                 return locale;
             }
         }
