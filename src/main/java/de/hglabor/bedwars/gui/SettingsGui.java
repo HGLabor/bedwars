@@ -58,6 +58,8 @@ public class SettingsGui {
                 Localization.getMessage("settings.criteriaSelector.tooltip", ImmutableMap.of("settingCount", String.valueOf(availableSettings)), Locale.getByPlayer(player)),
                 criteria.getIcon(),
                 onPress -> {
+                    if (player.getOpenInventory().getTitle().equals(criteria.name()))
+                        return; // Or else the GUI breaks
                     GuiBuilder criteriaSettingsBuilder = new GuiBuilder(Bedwars.getPlugin());
                     criteriaSettingsBuilder.withName(criteria.name());
                     criteriaSettingsBuilder.withSlots(54);
@@ -111,7 +113,7 @@ public class SettingsGui {
                     selectionBuilder.withName("APPLY CONFIRMATION");
                     player.closeInventory();
                     player.openInventory(selectionBuilder.build());
-                    player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended?
+                    //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended?
                 }
         ));
     }
