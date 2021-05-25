@@ -5,7 +5,9 @@ import de.hglabor.bedwars.config.localization.Localization;
 import de.hglabor.bedwars.config.settings.Criteria;
 import de.hglabor.bedwars.config.settings.Settings;
 import de.hglabor.bedwars.config.settings.types.BooleanSetting;
+import de.hglabor.bedwars.config.settings.types.EnumSetting;
 import de.hglabor.bedwars.config.settings.types.FloatSetting;
+import de.hglabor.bedwars.config.settings.types.IntSetting;
 import de.hglabor.bedwars.listener.PacketListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,6 +27,8 @@ public class Bedwars extends JavaPlugin {
         getCommand("settings").setExecutor(new SettingsCommand());
         Settings.addSetting("testFloatSetting", new FloatSetting("Test FloatSetting", 5f, 0f, 23f, Criteria.COMBAT));
         Settings.addSetting("testBooleanSetting", new BooleanSetting("Test BooleanSetting", false, Criteria.MAP));
+        Settings.addSetting("testIntSetting", new IntSetting("Test IntSetting", 5, 0, 12, Criteria.MECHANICS));
+        Settings.addSetting("testEnumSetting", new EnumSetting<>("Test EnumSetting", Criteria.GENERIC, Criteria.GENERIC));
         new PacketListener(this);
     }
 
