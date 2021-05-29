@@ -139,13 +139,12 @@ public class SettingsGui {
                     materialForSetting(setting),
                     onPress -> {
                         Object newValue = null;
+
                         if (onPress.getBukkitEvent().getClick() == ClickType.MIDDLE) {
                             newValue = setting.getDefaultValue();
-                        }
-                        if (setting instanceof BooleanSetting) {
+                        } else if (setting instanceof BooleanSetting) {
                             newValue = !(boolean) SettingTask.getInstance().getSetting(setting);
-                        }
-                        if (setting instanceof IntSetting) {
+                        } else if (setting instanceof IntSetting) {
                             int current = SettingTask.getInstance().getSetting(setting);
                             if (onPress.getBukkitEvent().isRightClick()) {
                                 if (current > ((IntSetting) setting).getMinValue())
@@ -154,8 +153,7 @@ public class SettingsGui {
                                 if (current < ((IntSetting) setting).getMaxValue())
                                     newValue = current + 1;
                             }
-                        }
-                        if (setting instanceof FloatSetting) {
+                        } else if (setting instanceof FloatSetting) {
                             float current = SettingTask.getInstance().getSetting(setting);
                             if (onPress.getBukkitEvent().isRightClick()) {
                                 if (current - 0.5f >= ((FloatSetting) setting).getMinValue())
@@ -165,17 +163,7 @@ public class SettingsGui {
                                     newValue = current + 0.5f;
                             }
                         }
-                        if (setting instanceof EnumSetting) {
-                            Enum<?>[] values = (Enum<?>[]) ((EnumSetting<?>) setting).getEnumClass().getEnumConstants();
-                            int ordinal = ((Enum<?>) SettingTask.getInstance().getSetting(setting)).ordinal();
-                            if (onPress.getBukkitEvent().isRightClick()) {
-                                if (ordinal > 0)
-                                    newValue = values[ordinal - 1];
-                            } else if (onPress.getBukkitEvent().isLeftClick()) {
-                                if (ordinal < values.length - 1)
-                                    newValue = values[ordinal + 1];
-                            }
-                        }
+
                         if (newValue == null)
                             return;
 
@@ -217,8 +205,6 @@ public class SettingsGui {
             lore.add("   ");
             lore.add(Localization.getMessage("settings.setting.floatTooltipOne", Locale.getByPlayer(player)));
             lore.add(Localization.getMessage("settings.setting.floatTooltipTwo", Locale.getByPlayer(player)));
-        } else if (setting instanceof EnumSetting) {
-            lore.add(Localization.getMessage("settings.setting.enumTooltip", Locale.getByPlayer(player)));
         }
         lore.add(Localization.getMessage("settings.setting.resetTooltip", Locale.getByPlayer(player)));
         return lore;
@@ -232,8 +218,6 @@ public class SettingsGui {
             material = Material.BLUE_CONCRETE;
         } else if (setting instanceof FloatSetting) {
             material = Material.LIGHT_BLUE_CONCRETE;
-        } else if (setting instanceof EnumSetting) {
-            material = Material.ORANGE_CONCRETE;
         }
         return material;
     }
