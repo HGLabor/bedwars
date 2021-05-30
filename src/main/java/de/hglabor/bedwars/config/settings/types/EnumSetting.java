@@ -7,14 +7,14 @@ public class EnumSetting<E> extends Setting<E> {
 
     public EnumSetting(String name, E defaultValue, Criteria criteria) {
         super(name, defaultValue, criteria);
-        if(!defaultValue.getClass().isEnum()) {
+        if (!defaultValue.getClass().isEnum()) {
             throw new IllegalArgumentException("Given type is no enum");
         } else {
             this.enumClass = defaultValue.getClass();
         }
     }
 
-    private Class<?> enumClass;
+    private final Class<?> enumClass;
 
     public Class<?> getEnumClass() {
         return this.enumClass;

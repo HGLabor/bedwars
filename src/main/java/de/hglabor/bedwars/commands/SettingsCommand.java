@@ -15,7 +15,7 @@ public class SettingsCommand implements CommandExecutor {
         if(sender.hasPermission("hglabor.bedwars.settings")) {
             if(sender instanceof Player) {
                 PacketUtils.sendNotification((Player) sender, "hglabor", "test");
-                //((Player) sender).openInventory(SettingsGui.createGui((Player) sender));
+                ((Player) sender).openInventory(SettingsGui.createGui((Player) sender));
             }
         }
         return false;

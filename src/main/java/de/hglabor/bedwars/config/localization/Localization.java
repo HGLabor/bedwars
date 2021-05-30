@@ -10,22 +10,26 @@ import java.util.HashMap;
 
 public class Localization {
 
-    private static HashMap<Locale, LocalizationFile> localizationFiles = new HashMap<>();
+    private static final HashMap<Locale, LocalizationFile> localizationFiles = new HashMap<>();
 
-    private static String colorValue = "\u00A7";
-    private static String colorKey = "&";
-    private static String newLineValue = "\n";
-    private static String newLineKey = "##";
+    private static final String colorValue = "\u00A7";
+    private static final String colorKey = "&";
+    private static final String newLineValue = "\n";
+    private static final String newLineKey = "##";
 
     public static void init() {
-        File localizationDirecory = new File(Bedwars.getPlugin().getDataFolder() + "/lang/");
-        if(!localizationDirecory.exists()) {
-            localizationDirecory.mkdirs();
+        File localizationDirectory = new File(Bedwars.getPlugin().getDataFolder() + "/lang/");
+        if (!localizationDirectory.exists()) {
+            localizationDirectory.mkdirs();
         }
-        for (File file : localizationDirecory.listFiles()) {
-            if(file.getName().endsWith(".locale.yml")) {
+        for (File file : localizationDirectory.listFiles()) {
+            if (file.getName().endsWith(".locale.yml")) {
                 localizationFiles.put(Locale.getByFile(file), new LocalizationFile(file));
             }
+        }
+        // If no locale found it won't throw errors
+        if (localizationFiles.isEmpty()) {
+            localizationFiles.put(Locale.ENGLISH, new LocalizationFile(new File(localizationDirectory, "en.locale.yml")));
         }
     }
 
