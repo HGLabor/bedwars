@@ -2,6 +2,7 @@ package de.hglabor.bedwars.config.localization;
 
 import com.google.common.collect.ImmutableMap;
 import de.hglabor.bedwars.Bedwars;
+import static de.hglabor.StringExtensionsKt.replaceHexCodes;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -39,7 +40,7 @@ public class Localization {
                 e.printStackTrace();
             }
         } else {
-            return yamlConfiguration.getString(key).replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue);
+            return replaceHexCodes(yamlConfiguration.getString(key).replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue));
         }
         return key;
     }
@@ -59,7 +60,7 @@ public class Localization {
                 result = result.replaceAll("\\$" + keys, map.get(keys));
             }
             result = result.replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue);
-            return result;
+            return replaceHexCodes(result);
         }
         return key;
     }
