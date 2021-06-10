@@ -8,13 +8,12 @@ import de.hglabor.bedwars.config.settings.Criteria;
 import de.hglabor.bedwars.config.settings.Setting;
 import de.hglabor.bedwars.config.settings.SettingTask;
 import de.hglabor.bedwars.config.settings.Settings;
-import de.hglabor.bedwars.config.settings.types.BooleanSetting;
-import de.hglabor.bedwars.config.settings.types.EnumSetting;
-import de.hglabor.bedwars.config.settings.types.FloatSetting;
-import de.hglabor.bedwars.config.settings.types.IntSetting;
+import de.hglabor.bedwars.config.settings.types.*;
 import de.hglabor.bedwars.gui.button.GuiButton;
+import de.hglabor.bedwars.utils.MathUtils;
 import de.hglabor.bedwars.utils.PacketUtils;
 import de.hglabor.utils.noriskutils.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,8 +25,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SettingsGui {
 
@@ -127,7 +128,6 @@ public class SettingsGui {
         }
         for (Setting<?> setting : Settings.getSettings()) {
             if(setting.getCriteria() == criteria) {
-
                 StringBuilder finalLore = new StringBuilder();
                 for (String s : createLore(setting, player)) {
                     finalLore.append(s);
@@ -139,7 +139,6 @@ public class SettingsGui {
                     materialForSetting(setting),
                     onPress -> {
                         Object newValue = null;
-
                         if (onPress.getBukkitEvent().getClick() == ClickType.MIDDLE) {
                             newValue = setting.getDefaultValue();
                         } else if (setting instanceof BooleanSetting) {
@@ -147,11 +146,13 @@ public class SettingsGui {
                         } else if (setting instanceof IntSetting) {
                             int current = SettingTask.getInstance().getSetting(setting);
                             if (onPress.getBukkitEvent().isRightClick()) {
-                                if (current > ((IntSetting) setting).getMinValue())
+                                if (current > ((IntSetting) setting).getMinValue()) {
                                     newValue = current - 1;
+                                }
                             } else if (onPress.getBukkitEvent().isLeftClick()) {
-                                if (current < ((IntSetting) setting).getMaxValue())
+                                if (current < ((IntSetting) setting).getMaxValue()) {
                                     newValue = current + 1;
+                                }
                             }
                         } else if (setting instanceof FloatSetting) {
                             float current = SettingTask.getInstance().getSetting(setting);
@@ -162,18 +163,37 @@ public class SettingsGui {
                                 if (current + 0.5f <= ((FloatSetting) setting).getMaxValue())
                                     newValue = current + 0.5f;
                             }
+                        } else if (setting instanceof EnumSetting<?>) {
+                            GuiBuilder parentScreen = guiBuilder;
+                            GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin());
+                            enumSettingScreen.withName(setting.getName() + " Selector");
+                            //TODO Add scrollbar
+                            enumSettingScreen.withSlots(MathUtils.translateGuiScale(((EnumSetting<?>) setting).getEnumClass().getEnumConstants().length+2));
+                            int i = -1;
+                            for (Object obj : ((EnumSetting<?>) setting).getEnumClass().getEnumConstants()) {
+                                i++;
+                                Enum<?> enumObj = (Enum<?>) obj;
+                                enumSettingScreen.withButton(i, new GuiButton(
+                                        enumObj.name(),
+                                        Localization.getMessage("settings.setting.enumTooltip", Locale.getByPlayer(player)),
+                                        Material.WHITE_CONCRETE_POWDER,
+                                        it -> {
+                                            SettingTask.getInstance().setSetting(setting, enumObj);
+                                            player.openInventory(parentScreen.build());
+                                        }
+                                ));
+                            }
+                            player.openInventory(enumSettingScreen.build());
                         }
-
-                        if (newValue == null)
+                        if (newValue == null) {
                             return;
-
+                        }
                         SettingTask.getInstance().setSetting(setting, newValue);
                         ItemStack itemStack = onPress.getBukkitEvent().getCurrentItem();
                         ItemMeta meta = itemStack.getItemMeta();
                         meta.setLore(createLore(setting, player));
                         itemStack.setItemMeta(meta);
                         itemStack.setType(materialForSetting(setting));
-
                         player.sendMessage(Localization.getMessage("settings.settingWasChanged", ImmutableMap.of("setting", setting.getName(), "newValue", SettingTask.getInstance().getSetting(setting).toString()), Locale.getByPlayer(player)));
                     }
                 ));
@@ -205,6 +225,12 @@ public class SettingsGui {
             lore.add("   ");
             lore.add(Localization.getMessage("settings.setting.floatTooltipOne", Locale.getByPlayer(player)));
             lore.add(Localization.getMessage("settings.setting.floatTooltipTwo", Locale.getByPlayer(player)));
+        } else if (setting instanceof DoubleSetting) {
+            lore.add(ChatColor.GRAY + "Min" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + ((DoubleSetting) setting).getMinValue());
+            lore.add(ChatColor.GRAY + "Max" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + ((DoubleSetting) setting).getMaxValue());
+            lore.add("   ");
+            lore.add(Localization.getMessage("settings.setting.doubleTooltipOne", Locale.getByPlayer(player)));
+            lore.add(Localization.getMessage("settings.setting.doubleTooltipTwo", Locale.getByPlayer(player)));
         }
         lore.add(Localization.getMessage("settings.setting.resetTooltip", Locale.getByPlayer(player)));
         return lore;
@@ -218,6 +244,8 @@ public class SettingsGui {
             material = Material.BLUE_CONCRETE;
         } else if (setting instanceof FloatSetting) {
             material = Material.LIGHT_BLUE_CONCRETE;
+        } else if (setting instanceof EnumSetting<?>) {
+            material = Material.GLASS;
         }
         return material;
     }
