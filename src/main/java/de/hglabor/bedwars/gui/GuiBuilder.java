@@ -20,10 +20,10 @@ public final class GuiBuilder {
 
     private String name;
     private int slots;
-    private Plugin plugin;
-    private HashMap<Integer, ItemStack> items;
-    private HashMap<Integer, GuiButton> guiButtons;
-    private ArrayList<Listener> waitingForUnRegister = new ArrayList<>();
+    private final Plugin plugin;
+    private final HashMap<Integer, ItemStack> items;
+    private final HashMap<Integer, GuiButton> guiButtons;
+    private final ArrayList<Listener> waitingForUnRegister = new ArrayList<>();
 
     public GuiBuilder(Plugin plugin) {
         this.name = "Gui Title";
@@ -61,20 +61,25 @@ public final class GuiBuilder {
             Listener listener = new Listener() {
                 @EventHandler
                 public void onInventoryClick(InventoryClickEvent event) {
-                    if(event.getClickedInventory() != null) {
-                        if(event.getView().getTitle().equalsIgnoreCase(name)) {
-                            event.setCancelled(true);
-                            if(event.getCurrentItem() != null) {
-                                if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(items.get(i).getItemMeta().getDisplayName())) {
-                                    if(guiButtons.containsKey(i)) {
-                                        GuiButton guiButton = guiButtons.get(i);
-                                        guiButton.press(event);
-                                    }
-                                    //waitingForUnRegister.remove(this);
-                                    //HandlerList.unregisterAll(this);
-                                }
-                            }
-                        }
+                    if (event.getClickedInventory() == null)
+                        return;
+                    if (!event.getView().getTitle().equalsIgnoreCase(name))
+                        return;
+
+                    event.setCancelled(true);
+                    if (event.getCurrentItem() == null)
+                        return;
+
+                    ItemStack item = event.getCurrentItem();
+                    if (!item.hasItemMeta() || !items.get(i).hasItemMeta())
+                        return;
+
+                    if (!item.getItemMeta().getDisplayName().equalsIgnoreCase(items.get(i).getItemMeta().getDisplayName()))
+                        return;
+
+                    if (guiButtons.containsKey(i)) {
+                        GuiButton guiButton = guiButtons.get(i);
+                        guiButton.press(event);
                     }
                 }
             };
@@ -84,17 +89,13 @@ public final class GuiBuilder {
             Bukkit.getPluginManager().registerEvents(new Listener() {
                 @EventHandler
                 public void onCloseInventory(InventoryCloseEvent event) {
-                    if(event.getView().getTitle().equalsIgnoreCase(name)) {
-                        for (Listener listeners : List.copyOf(waitingForUnRegister)) {
-                            HandlerList.unregisterAll(listeners);
-                            waitingForUnRegister.remove(listeners);
-                        }
+                    if (event.getView().getTitle().equalsIgnoreCase(name)) {
+                        waitingForUnRegister.forEach(HandlerList::unregisterAll);
+                        waitingForUnRegister.clear();
                     }
                 }
             }, plugin);
         }
         return inventory;
     }
-
-
 }
