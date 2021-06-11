@@ -164,22 +164,20 @@ public class SettingsGui {
                                     newValue = current + 0.5f;
                             }
                         } else if (setting instanceof EnumSetting<?>) {
-                            GuiBuilder parentScreen = guiBuilder;
                             GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin());
                             enumSettingScreen.withName(setting.getName() + " Selector");
                             //TODO Add scrollbar
-                            enumSettingScreen.withSlots(MathUtils.translateGuiScale(((EnumSetting<?>) setting).getEnumClass().getEnumConstants().length+2));
+                            enumSettingScreen.withSlots(MathUtils.translateGuiScale(((EnumSetting<?>) setting).getEnumClass().getEnumConstants().length + 2));
                             int i = -1;
-                            for (Object obj : ((EnumSetting<?>) setting).getEnumClass().getEnumConstants()) {
+                            for (Enum<?> obj : (Enum<?>[]) ((EnumSetting<?>) setting).getEnumClass().getEnumConstants()) {
                                 i++;
-                                Enum<?> enumObj = (Enum<?>) obj;
                                 enumSettingScreen.withButton(i, new GuiButton(
-                                        enumObj.name(),
+                                        obj.name(),
                                         Localization.getMessage("settings.setting.enumTooltip", Locale.getByPlayer(player)),
                                         Material.WHITE_CONCRETE_POWDER,
                                         it -> {
-                                            SettingTask.getInstance().setSetting(setting, enumObj);
-                                            player.openInventory(parentScreen.build());
+                                            SettingTask.getInstance().setSetting(setting, (Enum<?>) obj);
+                                            player.openInventory(guiBuilder.build());
                                         }
                                 ));
                             }
@@ -230,7 +228,7 @@ public class SettingsGui {
             lore.add(ChatColor.GRAY + "Max" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + ((DoubleSetting) setting).getMaxValue());
             lore.add("   ");
             lore.add(Localization.getMessage("settings.setting.doubleTooltipOne", Locale.getByPlayer(player)));
-            lore.add(Localization.getMessage("settings.setting.doubleTooltipTwo", Locale.getByPlayer(player)));
+            lore.add(Localization.getMessage("settings.setting.doubleTooltipTwo", Locale.getByPlayer(player))); // Is in necessary to have separate float / double tooltips?
         }
         lore.add(Localization.getMessage("settings.setting.resetTooltip", Locale.getByPlayer(player)));
         return lore;
@@ -242,10 +240,10 @@ public class SettingsGui {
             material = (boolean) Settings.getSetting(setting) ? Material.LIME_CONCRETE : Material.RED_CONCRETE;
         } else if (setting instanceof IntSetting) {
             material = Material.BLUE_CONCRETE;
-        } else if (setting instanceof FloatSetting) {
+        } else if (setting instanceof FloatSetting || setting instanceof DoubleSetting) {
             material = Material.LIGHT_BLUE_CONCRETE;
         } else if (setting instanceof EnumSetting<?>) {
-            material = Material.GLASS;
+            material = Material.BOOK;
         }
         return material;
     }
