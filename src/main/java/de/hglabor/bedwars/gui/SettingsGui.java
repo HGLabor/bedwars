@@ -11,24 +11,18 @@ import de.hglabor.bedwars.config.settings.Settings;
 import de.hglabor.bedwars.config.settings.types.*;
 import de.hglabor.bedwars.gui.button.GuiButton;
 import de.hglabor.bedwars.utils.MathUtils;
-import de.hglabor.bedwars.utils.PacketUtils;
 import de.hglabor.utils.noriskutils.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SettingsGui {
 
@@ -163,6 +157,15 @@ public class SettingsGui {
                                 if (current + 0.5f <= ((FloatSetting) setting).getMaxValue())
                                     newValue = current + 0.5f;
                             }
+                        } else if (setting instanceof DoubleSetting) {
+                            double current = SettingTask.getInstance().getSetting(setting);
+                            if (onPress.getBukkitEvent().isRightClick()) {
+                                if (current - 0.5d >= ((DoubleSetting) setting).getMinValue())
+                                    newValue = current - 0.5d;
+                            } else if (onPress.getBukkitEvent().isLeftClick()) {
+                                if (current + 0.5d <= ((DoubleSetting) setting).getMaxValue())
+                                    newValue = current + 0.5d;
+                            }
                         } else if (setting instanceof EnumSetting<?>) {
                             GuiBuilder parentScreen = guiBuilder;
                             GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin());
@@ -242,7 +245,7 @@ public class SettingsGui {
             material = (boolean) Settings.getSetting(setting) ? Material.LIME_CONCRETE : Material.RED_CONCRETE;
         } else if (setting instanceof IntSetting) {
             material = Material.BLUE_CONCRETE;
-        } else if (setting instanceof FloatSetting) {
+        } else if (setting instanceof FloatSetting || setting instanceof DoubleSetting) {
             material = Material.LIGHT_BLUE_CONCRETE;
         } else if (setting instanceof EnumSetting<?>) {
             material = Material.GLASS;
