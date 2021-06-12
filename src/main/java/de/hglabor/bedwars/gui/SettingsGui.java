@@ -75,6 +75,31 @@ public class SettingsGui {
 
     private static void drawButtons(GuiBuilder guiBuilder, Player player) {
         guiBuilder.withButton(53, new GuiButton(
+                Localization.getMessage("settings.button.resetAndExit.title", Locale.getByPlayer(player)),
+                Localization.getMessage("settings.button.resetAndExit.description", Locale.getByPlayer(player)),
+                Material.LIME_STAINED_GLASS_PANE,
+                onPress -> {
+                    GuiBuilder selectionBuilder = new GuiBuilder(Bedwars.getPlugin());
+                    selectionBuilder.withSlots(27);
+                    for (int i = 0; i < 27; i++) {
+                        selectionBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
+                    }
+                    selectionBuilder.withButton(13, new GuiButton(
+                            Localization.getMessage("settings.button.confirmReset.title", Locale.getByPlayer(player)),
+                            Localization.getMessage("settings.button.confirmReset.description", Locale.getByPlayer(player)),
+                            Material.LIME_CONCRETE,
+                            clickAction -> {
+                                player.closeInventory();
+                                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                                player.sendMessage(Localization.getMessage("settings.resetted", Locale.getByPlayer(player)));
+                            }
+                    ));
+                    selectionBuilder.withName("RESET CONFIRMATION");
+                    player.closeInventory();
+                    player.openInventory(selectionBuilder.build());
+                }
+        ));
+        guiBuilder.withButton(53, new GuiButton(
                 Localization.getMessage("settings.button.applyAndExit.title", Locale.getByPlayer(player)),
                 Localization.getMessage("settings.button.applyAndExit.description", Locale.getByPlayer(player)),
                 Material.LIME_STAINED_GLASS_PANE,
@@ -108,7 +133,7 @@ public class SettingsGui {
                     selectionBuilder.withName("APPLY CONFIRMATION");
                     player.closeInventory();
                     player.openInventory(selectionBuilder.build());
-                    //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended?
+                    //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended? No XD
                 }
         ));
     }
