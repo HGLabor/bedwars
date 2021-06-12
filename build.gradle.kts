@@ -12,6 +12,7 @@ repositories {
     mavenCentral()
     maven("https://repo.codemc.io/repository/maven-snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://maven.enginehub.org/repo/")
 }
 
 dependencies {
@@ -20,7 +21,7 @@ dependencies {
     compileOnly("com.comphenix.protocol", "ProtocolLib", "4.6.0")
     implementation("de.hglabor:hglabor-utils:0.0.10")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
-    compileOnly("org.bukkit","craftbukkit","1.16.5-R0.1-SNAPSHOT")
+    compileOnly(files("C:/Users/Simon/.m2/repository/org/bukkit/craftbukkit/1.16.5-R0.1-SNAPSHOT/craftbukkit-1.16.5.jar"))
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11

@@ -55,7 +55,7 @@ public final class GuiBuilder {
     }
 
     public Inventory build() {
-        Inventory inventory = Bukkit.createInventory(null, this.slots, this.name);
+        Inventory inventory = Bukkit.createInventory(null, slots <= 9 ? 9 : slots > 45 ? 54 : (slots / 9) * 9 + 9, this.name);
         for (int i : items.keySet()) {
             inventory.setItem(i, items.get(i));
             Listener listener = new Listener() {

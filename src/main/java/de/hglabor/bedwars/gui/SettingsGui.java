@@ -200,24 +200,7 @@ public class SettingsGui {
                                     newValue = current + 0.5d;
                             }
                         } else if (setting instanceof EnumSetting<?>) {
-                            GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin());
-                            enumSettingScreen.withName(setting.getName() + " Selector");
-                            //TODO Add scrollbar
-                            enumSettingScreen.withSlots(MathUtils.translateGuiScale(((EnumSetting<?>) setting).getEnumClass().getEnumConstants().length + 2));
-                            int i = -1;
-                            for (Enum<?> obj : (Enum<?>[]) ((EnumSetting<?>) setting).getEnumClass().getEnumConstants()) {
-                                i++;
-                                enumSettingScreen.withButton(i, new GuiButton(
-                                        obj.name(),
-                                        Localization.getMessage("settings.setting.enumTooltip", Locale.getByPlayer(player)),
-                                        Material.WHITE_CONCRETE_POWDER,
-                                        it -> {
-                                            SettingTask.getInstance().setSetting(setting, (Enum<?>) obj);
-                                            player.openInventory(guiBuilder.build());
-                                        }
-                                ));
-                            }
-                            player.openInventory(enumSettingScreen.build());
+                            drawEnumSetting((EnumSetting<?>) setting, player, 0, guiBuilder);
                         }
                         if (newValue == null) {
                             return;
@@ -237,6 +220,53 @@ public class SettingsGui {
                 }
             }
         }
+    }
+
+    private static void drawEnumSetting(EnumSetting<?> setting, Player player, int page /* = 0 */, GuiBuilder oldGui) {
+        Enum<?>[] entries = (Enum<?>[]) (setting).getEnumClass().getEnumConstants();
+        int pages = entries.length <= 54 ? 0 : (entries.length - 2) / 52;
+
+        if (page > pages)
+            return;
+
+        GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin())
+                .withName(setting.getName() + (pages == 0 ? " Selector" : " Selector (" + page + "/" + pages + ")"));
+
+        int pageSize = pages == 0 ? entries.length : page == 0 ? 53 : page == pages ? entries.length % 52 - 1 : 52;
+        enumSettingScreen.withSlots(pageSize);
+
+        if (page > 0)
+            enumSettingScreen.withButton(0, new GuiButton(
+                    Localization.getMessage("settings.pageUp", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.pageUpTooltip", Locale.getByPlayer(player)),
+                    Material.ARROW,
+                    it -> drawEnumSetting(setting, player, page - 1, oldGui)
+            ));
+        if (page < pages)
+            enumSettingScreen.withButton(53, new GuiButton(
+                    Localization.getMessage("settings.pageDown", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.pageDownTooltip", Locale.getByPlayer(player)),
+                    Material.ARROW,
+                    it -> drawEnumSetting(setting, player, page + 1, oldGui)
+            ));
+
+        Enum<?> current = SettingTask.getInstance().getSetting(setting);
+
+        for (int i = page == 0 ? 0 : 1, e = page == 0 ? 0 : page * 52 + 1; i < (page == 0 ? pageSize : pageSize + 1); ++i, ++e) {
+            Enum<?> entry = entries[e];
+            enumSettingScreen.withButton(i, new GuiButton(
+                    entry.name(),
+                    Localization.getMessage("settings.pageDown", Locale.getByPlayer(player)),
+                    current.equals(entry) ? Material.FILLED_MAP : Material.PAPER,
+                    it -> {
+                        SettingTask.getInstance().setSetting(setting, entry);
+                        drawSettings(oldGui, player, setting.getCriteria()); // Else it doesn't update "current"
+                        player.openInventory(oldGui.build());
+                    }
+            ));
+        }
+
+        player.openInventory(enumSettingScreen.build());
     }
 
     private static List<String> createLore(Setting<?> setting, Player player) {
