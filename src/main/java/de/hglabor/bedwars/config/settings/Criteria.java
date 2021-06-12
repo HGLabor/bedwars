@@ -10,7 +10,8 @@ public enum Criteria {
     GENERIC("settings.criteria.generic", Material.EMERALD),
     COMBAT("settings.criteria.combat", Material.GOLDEN_SWORD),
     MAP("settings.criteria.map", Material.MAP),
-    MECHANICS("settings.criteria.mechanics", Material.ELYTRA);
+    MECHANICS("settings.criteria.mechanics", Material.ELYTRA),
+    SHOP("settings.criteria.shop", Material.NETHERITE_INGOT);
 
     private final String translationKey;
     private final Material criteriaIcon;
