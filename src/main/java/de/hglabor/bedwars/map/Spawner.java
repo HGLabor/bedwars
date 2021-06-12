@@ -4,8 +4,11 @@ import de.hglabor.bedwars.Bedwars;
 import de.hglabor.utils.noriskutils.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.io.File;
 
 public class Spawner {
 
@@ -53,5 +56,16 @@ public class Spawner {
 
     public void endTasks() {
         bukkitTask.cancel();
+    }
+
+    public static Spawner createByFile(File file) {
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
+        return new Spawner(
+                yamlConfiguration.getInt("spawner.tickDelayBetweenSpawns"),
+                yamlConfiguration.getInt("spawner.spawnTickRate"),
+                Material.valueOf(yamlConfiguration.getString("spawner.material").toUpperCase()),
+                yamlConfiguration.getLocation("spawner.location"),
+                yamlConfiguration.getString("spawner.itemName")
+        );
     }
 }
