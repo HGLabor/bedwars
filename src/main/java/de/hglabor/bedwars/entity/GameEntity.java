@@ -21,6 +21,18 @@ public abstract class GameEntity<T extends Entity> {
     private final Location location;
     private Entity bukkitEntity;
 
+    public String getName() {
+        return name;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public Class<T> getEntityClazz() {
+        return entityClazz;
+    }
+
     @SuppressWarnings("unchecked")
     public GameEntity(String name, Class<T> entityClazz, Location location) {
         this.name = name;

@@ -58,6 +58,10 @@ public class Spawner {
         bukkitTask.cancel();
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
     public static Spawner createByFile(File file) {
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
         return new Spawner(
