@@ -23,6 +23,16 @@ public  class GuiButton {
         this.itemStackResult = new ItemBuilder(icon).setName(name.replace("&", "§")).setDescription(description.replace("&", "§").split("##")).build();
     }
 
+    public GuiButton(String name, String description, ItemStack icon, Consumer<GuiButtonClickAction> onPress) {
+        this.onPress = onPress;
+        this.itemStackResult = new ItemBuilder(icon).setName(name.replace("&", "§")).setDescription(description.replace("&", "§").split("##")).build();
+    }
+
+    public GuiButton(String name, String description, ItemBuilder icon, Consumer<GuiButtonClickAction> onPress) {
+        this.onPress = onPress;
+        this.itemStackResult = new ItemBuilder(icon.build()).setName(name.replace("&", "§")).setDescription(description.replace("&", "§").split("##")).build();
+    }
+
     public ItemStack getItemStackResult() {
         return itemStackResult;
     }

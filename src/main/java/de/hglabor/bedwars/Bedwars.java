@@ -8,9 +8,14 @@ import de.hglabor.bedwars.config.settings.types.BooleanSetting;
 import de.hglabor.bedwars.config.settings.types.EnumSetting;
 import de.hglabor.bedwars.config.settings.types.FloatSetting;
 import de.hglabor.bedwars.config.settings.types.IntSetting;
+import de.hglabor.bedwars.map.Map;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Bedwars extends JavaPlugin {
 
@@ -18,6 +23,21 @@ public class Bedwars extends JavaPlugin {
 
     public static Plugin getPlugin() {
         return plugin;
+    }
+
+    private static List<Map> maps = new ArrayList<>();
+
+    public static Collection<Map> getMaps() {
+        return maps;
+    }
+
+    public static void registerMap(Map map) {
+        maps.add(map);
+    }
+
+    public static void unregisterMap(Map map) {
+        map.destroy();
+        maps.remove(map);
     }
 
     @Override

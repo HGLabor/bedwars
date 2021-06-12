@@ -11,24 +11,18 @@ import de.hglabor.bedwars.config.settings.Settings;
 import de.hglabor.bedwars.config.settings.types.*;
 import de.hglabor.bedwars.gui.button.GuiButton;
 import de.hglabor.bedwars.utils.MathUtils;
-import de.hglabor.bedwars.utils.PacketUtils;
 import de.hglabor.utils.noriskutils.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SettingsGui {
 
@@ -80,6 +74,40 @@ public class SettingsGui {
     }
 
     private static void drawButtons(GuiBuilder guiBuilder, Player player) {
+        guiBuilder.withButton(45, new GuiButton(
+                Localization.getMessage("settings.button.maps.title", Locale.getByPlayer(player)),
+                Localization.getMessage("settings.button.maps.description", Locale.getByPlayer(player)),
+                Material.MAP,
+                onPress -> onPress.getPlayer().openInventory(MapGui.createGui(player))
+        ));
+        guiBuilder.withButton(52, new GuiButton(
+                Localization.getMessage("settings.button.resetAndExit.title", Locale.getByPlayer(player)),
+                Localization.getMessage("settings.button.resetAndExit.description", Locale.getByPlayer(player)),
+                Material.RED_STAINED_GLASS_PANE,
+                onPress -> {
+                    GuiBuilder selectionBuilder = new GuiBuilder(Bedwars.getPlugin());
+                    selectionBuilder.withSlots(27);
+                    for (int i = 0; i < 27; i++) {
+                        selectionBuilder.withItem(new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).setName(" ").build(), i);
+                    }
+                    selectionBuilder.withButton(13, new GuiButton(
+                            Localization.getMessage("settings.button.confirmReset.title", Locale.getByPlayer(player)),
+                            Localization.getMessage("settings.button.confirmReset.description", Locale.getByPlayer(player)),
+                            Material.LIME_CONCRETE,
+                            clickAction -> {
+                                for (Setting<?> setting : Settings.getSettings()) {
+                                    SettingTask.getInstance().setSetting(setting, setting.getDefaultValue());
+                                }
+                                player.closeInventory();
+                                player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                                player.sendMessage(Localization.getMessage("settings.resetted", ImmutableMap.of("count", String.valueOf(Settings.getSettings().size())), Locale.getByPlayer(player)));
+                            }
+                    ));
+                    selectionBuilder.withName("RESET CONFIRMATION");
+                    player.closeInventory();
+                    player.openInventory(selectionBuilder.build());
+                }
+        ));
         guiBuilder.withButton(53, new GuiButton(
                 Localization.getMessage("settings.button.applyAndExit.title", Locale.getByPlayer(player)),
                 Localization.getMessage("settings.button.applyAndExit.description", Locale.getByPlayer(player)),
@@ -96,7 +124,6 @@ public class SettingsGui {
                             Material.LIME_DYE,
                             clickAction -> {
                                 //write settings to config in template
-                                player.closeInventory();
                                 player.playSound(player.getLocation(), Sound.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1, 1);
                                 player.sendMessage(Localization.getMessage("settings.saved", Locale.getByPlayer(player)));
                             }
@@ -114,7 +141,7 @@ public class SettingsGui {
                     selectionBuilder.withName("APPLY CONFIRMATION");
                     player.closeInventory();
                     player.openInventory(selectionBuilder.build());
-                    //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended?
+                    //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 10, 1); // Double Sound intended? No XD
                 }
         ));
     }
@@ -162,6 +189,15 @@ public class SettingsGui {
                             } else if (onPress.getBukkitEvent().isLeftClick()) {
                                 if (current + 0.5f <= ((FloatSetting) setting).getMaxValue())
                                     newValue = current + 0.5f;
+                            }
+                        } else if (setting instanceof DoubleSetting) {
+                            double current = SettingTask.getInstance().getSetting(setting);
+                            if (onPress.getBukkitEvent().isRightClick()) {
+                                if (current - 0.5d >= ((DoubleSetting) setting).getMinValue())
+                                    newValue = current - 0.5d;
+                            } else if (onPress.getBukkitEvent().isLeftClick()) {
+                                if (current + 0.5d <= ((DoubleSetting) setting).getMaxValue())
+                                    newValue = current + 0.5d;
                             }
                         } else if (setting instanceof EnumSetting<?>) {
                             GuiBuilder enumSettingScreen = new GuiBuilder(Bedwars.getPlugin());

@@ -44,7 +44,7 @@ public class Localization {
                 e.printStackTrace();
             }
         } else {
-            return replaceHexCodes(yamlConfiguration.getString(key).replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue));
+            return replaceHexCodes(yamlConfiguration.getString(key)).replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue);
         }
         return key;
     }
@@ -63,8 +63,9 @@ public class Localization {
             for (String keys : map.keySet()) {
                 result = result.replaceAll("\\$" + keys, map.get(keys));
             }
+            result = replaceHexCodes(result);
             result = result.replaceAll(colorKey, colorValue).replaceAll(newLineKey, newLineValue);
-            return replaceHexCodes(result);
+            return result;
         }
         return key;
     }
