@@ -12,6 +12,7 @@ public  class GuiButton {
 
     private Consumer<GuiButtonClickAction> onPress;
     private ItemStack itemStackResult;
+
     public void press(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1,1);
