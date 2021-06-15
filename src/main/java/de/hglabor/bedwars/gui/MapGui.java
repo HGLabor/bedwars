@@ -112,7 +112,7 @@ public class MapGui {
                     Localization.getMessage("settings.mapbuilder.managementscreen.delete.buttonTooltip", Locale.getByPlayer(player)),
                     Material.RED_STAINED_GLASS_PANE,
                     onPress -> {
-                        Bedwars.registerMap(map);
+                        Bedwars.unregisterMap(map);
                         File mapFile = new File(Bedwars.getPlugin().getDataFolder(), "maps/" + map.getName().toLowerCase() + "/");
                         mapFile.delete();
                         drawMapOverview(parent, onPress.getPlayer());
