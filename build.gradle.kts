@@ -12,6 +12,7 @@ repositories {
     mavenCentral()
     maven("https://repo.codemc.io/repository/maven-snapshots/")
     maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://maven.enginehub.org/repo/")
 }
 
 dependencies {

@@ -108,7 +108,7 @@ public class MapGui {
                         ).build(), start);
                 start++;
             }
-            guiBuilder.withButton(54, new GuiButton(
+            guiBuilder.withButton(53, new GuiButton(
                     Localization.getMessage("settings.mapbuilder.managementscreen.goBack.buttonName", Locale.getByPlayer(player)),
                     Localization.getMessage("settings.mapbuilder.managementscreen.goBack.buttonTooltip", Locale.getByPlayer(player)),
                     Material.ORANGE_STAINED_GLASS_PANE,
@@ -117,12 +117,12 @@ public class MapGui {
                         onPress.getPlayer().openInventory(parent.build());
                     }
             ));
-            guiBuilder.withButton(53, new GuiButton(
+            guiBuilder.withButton(52, new GuiButton(
                     Localization.getMessage("settings.mapbuilder.managementscreen.delete.buttonName", Locale.getByPlayer(player)),
                     Localization.getMessage("settings.mapbuilder.managementscreen.delete.buttonTooltip", Locale.getByPlayer(player)),
                     Material.RED_STAINED_GLASS_PANE,
                     onPress -> {
-                        Bedwars.registerMap(map);
+                        Bedwars.unregisterMap(map);
                         File mapFile = new File(Bedwars.getPlugin().getDataFolder(), "maps/" + map.getName().toLowerCase() + "/");
                         mapFile.delete();
                         drawMapOverview(parent, onPress.getPlayer());

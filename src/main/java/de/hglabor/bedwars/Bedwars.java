@@ -10,6 +10,7 @@ import de.hglabor.bedwars.config.settings.types.FloatSetting;
 import de.hglabor.bedwars.config.settings.types.IntSetting;
 import de.hglabor.bedwars.map.Map;
 import net.axay.kspigot.main.KSpigot;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,7 +27,7 @@ public class Bedwars extends KSpigot {
         return plugin;
     }
 
-    private static List<Map> maps = new ArrayList<>();
+    private static final List<Map> maps = new ArrayList<>();
 
     public static Collection<Map> getMaps() {
         return maps;
@@ -40,7 +41,6 @@ public class Bedwars extends KSpigot {
         map.destroy();
         maps.remove(map);
     }
-
     @Override
     public void startup() {
         plugin = this;
@@ -49,7 +49,8 @@ public class Bedwars extends KSpigot {
         Settings.addSetting("testFloatSetting", new FloatSetting("Test FloatSetting", 5f, 0f, 23f, Criteria.COMBAT));
         Settings.addSetting("testBooleanSetting", new BooleanSetting("Test BooleanSetting", false, Criteria.MAP));
         Settings.addSetting("testIntSetting", new IntSetting("Test IntSetting", 5, 0, 12, Criteria.MECHANICS));
-        Settings.addSetting("testEnumSetting", new EnumSetting<BlockFace>("Test EnumSetting", BlockFace.EAST, Criteria.GENERIC));
+        Settings.addSetting("testEnumSetting", new EnumSetting<>("Test EnumSetting", BlockFace.EAST, Criteria.GENERIC));
+        Settings.addSetting("testLargeEnumSetting", new EnumSetting<>("Test Large EnumSetting", Material.AIR, Criteria.SHOP));
     }
 
     @Override
