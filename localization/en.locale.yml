@@ -1,0 +1,75 @@
+settings:
+  title: "&0Settings"
+  maps: "&0Maps"
+  settingWasChanged: "&3$setting &fwas changed to &3$newValue"
+  saved: "All changes were saved."
+  mapbuilder:
+    entityscreen:
+      addUpgradeShop:
+        buttonName: "&aAdd new Upgrade Shop"
+        buttonTooltip: "&7Adds a new upgrade shop to this map."
+        addedMessage: "&aCreated a new upgrade shop at your current position."
+      addItemShop:
+        buttonName: "&aAdd new Item Shop"
+        buttonTooltip: "&7Adds a new item shop to this map."
+        addedMessage: "&aCreated a new item shop at your current position."
+    buildermainscreen:
+      name:
+        buttonTooltip: "&7Define the name of this map.##&7Current&8: &e$current"
+      teams:
+        buttonTooltip: "&7Manage the teams of this map."
+      bases:
+        buttonTooltip: "&7Manage the bases of this map."
+      spawners:
+        buttonTooltip: "&7Manage the spawners of this map."
+      entites:
+        buttonTooltip: "&7Manage the shop entities of this map."
+      baseCount:
+        buttonTooltip: "&7Define the base count of this map.  &7Current&8: &e$current"
+      teamCount:
+        buttonTooltip: "&7Define the team count of this map.  &7Current&8: &e$current"
+    mainscreen:
+      addMapName: "&aCreate new map"
+      addMapTooltip: "&7Open a new mapbuilder screen and create a new map."
+  button:
+    maps:
+      title: "&#00ffa2Map Management"
+      description: "&f&oManage maps for every bedwars round."
+    applyAndExit:
+      title: "&aApply and exit"
+      description: "&f&oApply changes and exit menu"
+    resetAndExit:
+      title: "&cReset and exit"
+      description: "&f&oReset all settings and exit menu"
+    applyToEveryRound:
+      title: "&aEvery round"
+      description: "&7Your changes will be applied to every round##&a ##&3&oClick to save changes."
+    applyToOnlyThisRound:
+      title: "&6Just this round"
+      description: "&7Your changes will only be applied to this round##&a ##&3&oClick to save changes."
+  criteria:
+    generic: "&#00ffa2Generic"
+    combat: "&#00ffa2Combat"
+    map: "&#00ffa2Map"
+    mechanics: "&#00ffa2Mechanics"
+    shop: "&#00ffa2Shop"
+  criteriaSelector:
+    tooltip: "&3&oClick to switch to this tab."
+  setting:
+    defaultTooltip: "&7Default&8: &e$value"
+    currentTooltip: "&7Current&8: &e$value"
+    floatTooltipOne: "&7Left Click&8: &e0.5 &amore"
+    floatTooltipTwo: "&7Right Click&8: &e0.5 &cless"
+    doubleTooltipOne: "&7Left Click&8: &e0.5 &amore"
+    doubleTooltipTwo: "&7Right Click&8: &e0.5 &cless"
+    intTooltipOne: "&7Left Click&8: &e1 &amore"
+    intTooltipTwo: "&7Right Click&8: &e15 &cless"
+    resetTooltip: "&7&oTo reset, click middleclick."
+    booleanTooltip: "&7Click to toggle."
+    enumTooltip: "&7Click to select."
+map:
+  entities:
+    upgradeshop:
+      name: "&#ace2ea&lUPGRADE SHOP"
+    upgradeshop:
+      name: "&#ace2ea&lITEM SHOP"
