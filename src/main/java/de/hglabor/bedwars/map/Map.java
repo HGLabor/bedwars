@@ -4,8 +4,10 @@ import de.hglabor.bedwars.Bedwars;
 import de.hglabor.bedwars.entity.GameEntity;
 import de.hglabor.bedwars.entity.entities.ItemShopVillagerEntity;
 import de.hglabor.bedwars.entity.entities.UpgradeShopVillagerEntity;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_16_R3.CraftChunk;
 
 import java.io.File;
 import java.util.ArrayList;

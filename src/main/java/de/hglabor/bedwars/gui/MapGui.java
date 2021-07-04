@@ -2,6 +2,7 @@ package de.hglabor.bedwars.gui;
 
 
 import com.google.common.collect.ImmutableMap;
+import de.hglabor.InputUtils;
 import de.hglabor.bedwars.Bedwars;
 import de.hglabor.bedwars.config.localization.Locale;
 import de.hglabor.bedwars.config.localization.Localization;
@@ -13,9 +14,12 @@ import de.hglabor.bedwars.map.Base;
 import de.hglabor.bedwars.map.Map;
 import de.hglabor.bedwars.map.Spawner;
 import de.hglabor.bedwars.map.builder.MapFactory;
+import de.hglabor.bedwars.map.builder.SpawnerFactory;
+import de.hglabor.bedwars.map.builder.SpawnerMaterial;
 import de.hglabor.utils.noriskutils.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -175,21 +179,17 @@ public class MapGui {
                     ChatColor.DARK_GREEN + "Spawners",
                     Localization.getMessage("settings.mapbuilder.buildermainscreen.spawners.buttonTooltip", Locale.getByPlayer(player)),
                     Material.SPAWNER,
-                    onPress -> {
-
-                    }
+                    onPress -> onPress.getPlayer().openInventory(MapBuilderSpawnerOverviewScreen.createGui(player))
             ));
             guiBuilder.withButton(13, new GuiButton(
                     ChatColor.YELLOW + "Entities",
                     Localization.getMessage("settings.mapbuilder.buildermainscreen.entites.buttonTooltip", Locale.getByPlayer(player)),
                     Material.BLAZE_SPAWN_EGG,
-                    onPress -> {
-
-                    }
+                    onPress -> onPress.getPlayer().openInventory(MapBuilderEntitiesOverviewScreen.createGui(onPress.getPlayer()))
             ));
             guiBuilder.withButton(14, new GuiButton(
                     ChatColor.BLUE + "Map Size (Base count)",
-                    Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getSize()), Locale.getByPlayer(player)),
                     Material.BLUE_CONCRETE,
                     onPress -> {
                         ClickType click = onPress.getBukkitEvent().getClick();
@@ -200,7 +200,7 @@ public class MapGui {
                         } else if(click == ClickType.MIDDLE) {
                             currentlyBuilding.setSize(1);
                         }
-                        updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getTeamSize()), Locale.getByPlayer(player)).split("##"));
+                        updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getSize()), Locale.getByPlayer(player)).split("##"));
                     }
             ));
             guiBuilder.withButton(15, new GuiButton(
@@ -235,6 +235,9 @@ public class MapGui {
             GuiBuilder guiBuilder = new GuiBuilder(Bedwars.getPlugin())
                     .withName(ChatColor.BLACK + "MAP BUILDER ENTITY OVERVIEW")
                     .withSlots(54);
+            for (int i = 0; i < 54; i++) {
+                guiBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
+            }
             for (int i = 10; i < 44; i++) {
                 if(i != 35 && i != 36 && i != 17 && i != 18 && i != 26 && i != 27) {
                     guiBuilder.withItem(new ItemStack(Material.AIR), i);
@@ -251,6 +254,8 @@ public class MapGui {
                         onPress -> {
                             itemShop.kill();
                             currentlyBuilding.removeItemShop(itemShop);
+                            onPress.getPlayer().closeInventory();
+                            onPress.getPlayer().playSound(onPress.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
                         }
                 ));
                 start++;
@@ -264,14 +269,186 @@ public class MapGui {
                         onPress -> {
                             upgradeShopVillagerEntity.kill();
                             currentlyBuilding.removeUpgradeShop(upgradeShopVillagerEntity);
+                            onPress.getPlayer().closeInventory();
+                            onPress.getPlayer().playSound(onPress.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
                         }
                 ));
                 start++;
                 upgradeShopCount++;
             }
+            guiBuilder.withButton(53, new GuiButton(
+                    Localization.getMessage("settings.mapbuilder.entityscreen.addItemShop.buttonName", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.mapbuilder.entityscreen.addItemShop.buttonTooltip", Locale.getByPlayer(player)),
+                    Material.LIME_CONCRETE,
+                    onPress -> {
+                        currentlyBuilding.addItemShop(new ItemShopVillagerEntity(onPress.getPlayer().getLocation()));
+                        player.sendMessage(Localization.getMessage("settings.mapbuilder.entityscreen.addItemShop.addedMessage", Locale.getByPlayer(player)));
+                        player.closeInventory();
+                    }
+            ));
+            guiBuilder.withButton(52, new GuiButton(
+                    Localization.getMessage("settings.mapbuilder.entityscreen.addUpgradeShop.buttonName", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.mapbuilder.entityscreen.addUpgradeShop.buttonTooltip", Locale.getByPlayer(player)),
+                    Material.LIME_CONCRETE,
+                    onPress -> {
+                        currentlyBuilding.addUpgradeShop(new UpgradeShopVillagerEntity(onPress.getPlayer().getLocation()));
+                        player.sendMessage(Localization.getMessage("settings.mapbuilder.entityscreen.addUpgradeShop.addedMessage", Locale.getByPlayer(player)));
+                        player.closeInventory();
+                    }
+            ));
+            return guiBuilder.build();
+        }
+    }
+
+    public static class MapBuilderSpawnerOverviewScreen {
+
+        private static SpawnerFactory currentBuildingSpawner = null;
+
+        public static Inventory createGui(Player player) {
+            GuiBuilder guiBuilder = new GuiBuilder(Bedwars.getPlugin())
+                    .withName(ChatColor.BLACK + "MAP BUILDER SPAWNER OVERVIEW")
+                    .withSlots(54);
+            for (int i = 0; i < 54; i++) {
+                guiBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
+            }
+            for (int i = 9; i < 44; i++) {
+                if(i != 35 && i != 36 && i != 17 && i != 18 && i != 26 && i != 27) {
+                    guiBuilder.withItem(new ItemStack(Material.AIR), i);
+                }
+            }
+            int start = 9;
+            int spawnerCount = 1;
+            guiBuilder.withButton(53, new GuiButton(
+                    Localization.getMessage("settings.mapbuilder.spawner.mainscreen.addSpawner.buttonName", Locale.getByPlayer(player)),
+                    Localization.getMessage("settings.mapbuilder.spawner.mainscreen.addSpawner.buttonTooltip", Locale.getByPlayer(player)),
+                    Material.LIME_CONCRETE,
+                    onPress -> onPress.getPlayer().openInventory(MapBuilderSpawnerBuilderScreen.createGui(player))
+            ));
+            for (SpawnerFactory spawner : currentlyBuilding.getSpawner()) {
+                guiBuilder.withButton(start, new GuiButton(
+                        ChatColor.DARK_GREEN + spawner.getMaterial().name() + " SPAWNER (#" + spawnerCount + ")",
+                        "" + ChatColor.GRAY + "tickDelayBetweenSpawns" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + spawner.getTickDelayBetweenSpawns() + "##" +
+                                "" + ChatColor.GRAY + "tickRate" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + spawner.getSpawnTickRate() + "##" +
+                                "" + ChatColor.GRAY + "xyz" + ChatColor.DARK_GRAY + ": " + ChatColor.YELLOW + spawner.getLocation().getBlockX() + " " + spawner.getLocation().getBlockY() + " " + spawner.getLocation().getBlockZ(),
+                        Material.SPAWNER,
+                        onPress -> {
+                            onPress.getPlayer().playSound(onPress.getPlayer().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10, 1);
+                            currentlyBuilding.removeSpawner(spawner);
+                            onPress.getPlayer().closeInventory();
+                        }
+                ));
+                start++;
+                spawnerCount++;
+            }
             return guiBuilder.build();
         }
 
-    }
+        public static class MapBuilderSpawnerBuilderScreen {
 
+            private static SpawnerMaterial material = SpawnerMaterial.IRON;
+
+            public static Inventory createGui(Player player) {
+                if(currentBuildingSpawner == null) {
+                    currentBuildingSpawner = new SpawnerFactory();
+                }
+                GuiBuilder guiBuilder = new GuiBuilder(Bedwars.getPlugin());
+                guiBuilder.withName(ChatColor.BLACK + "SPAWNER BUILDER");
+                guiBuilder.withSlots(27);
+                for (int i = 0; i < 27; i++) {
+                    guiBuilder.withItem(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName(" ").build(), i);
+                }
+                guiBuilder.withButton(9, new GuiButton(
+                        ChatColor.LIGHT_PURPLE + "Tick Delay Between Spawns",
+                        Localization.getMessage("settings.mapbuilder.spawnerbuilder.tickDelayBetweenSpawns.buttonTooltip", ImmutableMap.of("current", currentBuildingSpawner.getTickDelayBetweenSpawns() + ""), Locale.getByPlayer(player)),
+                        Material.CLOCK,
+                        onPress -> {
+                            ClickType click = onPress.getBukkitEvent().getClick();
+                            if(click.isLeftClick()) {
+                                currentBuildingSpawner.setTickDelayBetweenSpawns(currentBuildingSpawner.getTickDelayBetweenSpawns()+1);
+                            } else if(click.isRightClick()) {
+                                currentBuildingSpawner.setTickDelayBetweenSpawns(currentBuildingSpawner.getTickDelayBetweenSpawns()-1);
+                            } else if(click == ClickType.MIDDLE) {
+                                currentBuildingSpawner.setTickDelayBetweenSpawns(1);
+                            }
+                            updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.spawnbuilder.tickDelayBetweenSpawns.buttonTooltip", ImmutableMap.of("current", "" + currentBuildingSpawner.getTickDelayBetweenSpawns()), Locale.getByPlayer(player)).split("##"));
+                        }
+                ));
+                guiBuilder.withButton(10, new GuiButton(
+                        ChatColor.AQUA + "Spawn Tick Rate",
+                        Localization.getMessage("settings.mapbuilder.spawnbuilder.spawnTickRate.buttonTooltip", Locale.getByPlayer(player)),
+                        Material.BAKED_POTATO,
+                        onPress -> {
+                            ClickType click = onPress.getBukkitEvent().getClick();
+                            if(click.isLeftClick()) {
+                                currentBuildingSpawner.setSpawnTickRate(currentBuildingSpawner.getSpawnTickRate()+1);
+                            } else if(click.isRightClick()) {
+                                currentBuildingSpawner.setSpawnTickRate(currentBuildingSpawner.getSpawnTickRate()-1);
+                            } else if(click == ClickType.MIDDLE) {
+                                currentBuildingSpawner.setSpawnTickRate(10);
+                            }
+                            updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.spawnbuilder.spawnTickRate.buttonTooltip", ImmutableMap.of("current", "" + currentBuildingSpawner.getSpawnTickRate()), Locale.getByPlayer(player)).split("##"));
+                        }
+                ));
+                guiBuilder.withButton(11, new GuiButton(
+                        ChatColor.YELLOW + "Item Name",
+                        Localization.getMessage("settings.mapbuilder.spawnbuilder.itemName.buttonTooltip", Locale.getByPlayer(player)),
+                        Material.NAME_TAG,
+                        onPress -> currentBuildingSpawner.setItemName(InputUtils.INSTANCE.awaitAnvilInput(onPress.getPlayer(), "Type in Spawner Item Name"))
+                ));
+                guiBuilder.withButton(12, new GuiButton(
+                        ChatColor.DARK_GREEN + "Spawners",
+                        Localization.getMessage("settings.mapbuilder.buildermainscreen.spawners.buttonTooltip", Locale.getByPlayer(player)),
+                        Material.SPAWNER,
+                        onPress -> onPress.getPlayer().openInventory(MapBuilderSpawnerOverviewScreen.createGui(player))
+                ));
+                guiBuilder.withButton(13, new GuiButton(
+                        ChatColor.YELLOW + "Entities",
+                        Localization.getMessage("settings.mapbuilder.buildermainscreen.entites.buttonTooltip", Locale.getByPlayer(player)),
+                        Material.BLAZE_SPAWN_EGG,
+                        onPress -> onPress.getPlayer().openInventory(MapBuilderEntitiesOverviewScreen.createGui(onPress.getPlayer()))
+                ));
+                guiBuilder.withButton(14, new GuiButton(
+                        ChatColor.BLUE + "Map Size (Base count)",
+                        Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getSize()), Locale.getByPlayer(player)),
+                        Material.BLUE_CONCRETE,
+                        onPress -> {
+                            ClickType click = onPress.getBukkitEvent().getClick();
+                            if(click.isLeftClick()) {
+                                currentlyBuilding.setSize(currentlyBuilding.getSize()+1);
+                            } else if(click.isRightClick()) {
+                                currentlyBuilding.setSize(currentlyBuilding.getSize()-1);
+                            } else if(click == ClickType.MIDDLE) {
+                                currentlyBuilding.setSize(1);
+                            }
+                            updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.buildermainscreen.baseCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getSize()), Locale.getByPlayer(player)).split("##"));
+                        }
+                ));
+                guiBuilder.withButton(15, new GuiButton(
+                        ChatColor.BLUE + "Team Size",
+                        Localization.getMessage("settings.mapbuilder.buildermainscreen.teamCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getTeamSize()), Locale.getByPlayer(player)),
+                        Material.BLUE_CONCRETE,
+                        onPress -> {
+                            ClickType click = onPress.getBukkitEvent().getClick();
+                            if(click.isLeftClick()) {
+                                currentlyBuilding.setTeamSize(currentlyBuilding.getTeamSize()+1);
+                            } else if(click.isRightClick()) {
+                                currentlyBuilding.setTeamSize(currentlyBuilding.getTeamSize()-1);
+                            } else if(click == ClickType.MIDDLE) {
+                                currentlyBuilding.setTeamSize(1);
+                            }
+                            updateLore(onPress.getBukkitEvent().getCurrentItem(), Localization.getMessage("settings.mapbuilder.buildermainscreen.teamCount.buttonTooltip", ImmutableMap.of("current", "" + currentlyBuilding.getTeamSize()), Locale.getByPlayer(player)).split("##"));
+                        }
+                ));
+                return guiBuilder.build();
+            }
+
+            private static void updateLore(ItemStack stack, String... newLore) {
+                ItemMeta meta = stack.getItemMeta();
+                meta.setLore(List.of(newLore));
+                stack.setItemMeta(meta);
+            }
+
+        }
+
+    }
 }

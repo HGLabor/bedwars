@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("net.axay", "kspigot", "1.16.29")
     compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol", "ProtocolLib", "4.6.0")
     implementation("de.hglabor:hglabor-utils:0.0.10")

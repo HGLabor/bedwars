@@ -9,6 +9,8 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
@@ -59,6 +61,23 @@ public abstract class GameEntity<T extends Entity> {
                 public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
                     if(event.getRightClicked() == bukkitEntity) {
                         onClick((T) event.getRightClicked(), event.getPlayer());
+                    }
+                }
+
+                @EventHandler
+                public void onDamage(EntityDamageEvent event) {
+                    if(event.getEntity() == bukkitEntity) {
+                        event.setCancelled(true);
+                    }
+                }
+
+                @EventHandler
+                public void onPlayerHitsEntity(EntityDamageByEntityEvent event) {
+                    if(event.getEntity() == bukkitEntity) {
+                        event.setCancelled(true);
+                        if(event.getDamager() instanceof Player) {
+                            onClick((T) bukkitEntity, (Player) event.getDamager());
+                        }
                     }
                 }
             }, Bedwars.getPlugin());

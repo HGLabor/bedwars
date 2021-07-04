@@ -9,6 +9,7 @@ import de.hglabor.bedwars.config.settings.types.EnumSetting;
 import de.hglabor.bedwars.config.settings.types.FloatSetting;
 import de.hglabor.bedwars.config.settings.types.IntSetting;
 import de.hglabor.bedwars.map.Map;
+import net.axay.kspigot.main.KSpigot;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class Bedwars extends JavaPlugin {
+public class Bedwars extends KSpigot {
 
     private static Plugin plugin;
 
@@ -41,7 +42,7 @@ public class Bedwars extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void startup() {
         plugin = this;
         Localization.init();
         getCommand("settings").setExecutor(new SettingsCommand());
@@ -52,7 +53,7 @@ public class Bedwars extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public void shutdown() {
 
     }
 }
