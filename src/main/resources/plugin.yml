@@ -2,6 +2,8 @@ name: HGLaborBedwars
 main: de.hglabor.bedwars.Bedwars
 version: 1.0
 api-version: 1.16
-#depend: ["ProtocolLib"]
 commands:
   settings:
+libraries:
+  - net.axay:kspigot:1.17.2
+  - de.hglabor:hglabor-utils:0.0.10

@@ -1,15 +1,11 @@
 package de.hglabor.bedwars.commands;
 
 import de.hglabor.bedwars.gui.SettingsGui;
-import de.hglabor.bedwars.utils.PacketUtils;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Random;
 
 public class SettingsCommand implements CommandExecutor {
 

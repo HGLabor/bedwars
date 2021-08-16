@@ -1,7 +1,6 @@
 plugins {
     java
-    kotlin("jvm") version "1.5.0"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    kotlin("jvm") version "1.5.21"
 }
 
 group = "de.hglabor"
@@ -17,19 +16,17 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("net.axay", "kspigot", "1.16.29")
-    compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol", "ProtocolLib", "4.6.0")
+    implementation("net.axay", "kspigot", "1.17.2")
+    compileOnly("org.spigotmc", "spigot", "1.17.1-R0.1-SNAPSHOT")
     implementation("de.hglabor:hglabor-utils:0.0.10")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT")
-    compileOnly("org.bukkit","craftbukkit","1.16.5-R0.1-SNAPSHOT")
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.6-SNAPSHOT")
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_16
+java.targetCompatibility = JavaVersion.VERSION_16
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 tasks.withType<JavaCompile> {
